@@ -1,5 +1,5 @@
 <title>Webtech MCQ</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
   :root {
@@ -9,6 +9,7 @@
     --text-dim: #6b7280;
     --accent: #3b5bdb;
     --accent-hover: #2b4bc6;
+    --accent-light: color-mix(in srgb, #3b5bdb 10%, transparent);
     --border: #e5e7eb;
     --success: #16a34a;
     --success-bg: #dcfce7;
@@ -20,6 +21,7 @@
     --locked-bg: #ede9fe;
     --locked: #7c3aed;
     --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -29,6 +31,7 @@
       --text-dim: #9ca3af;
       --accent: #6d8cff;
       --accent-hover: #5a7af0;
+      --accent-light: color-mix(in srgb, #6d8cff 12%, transparent);
       --border: #2d3140;
       --success: #4ade80;
       --success-bg: #14291e;
@@ -39,6 +42,7 @@
       --none-bg: #1f2230;
       --locked-bg: #1e1533;
       --locked: #a78bfa;
+      --shadow: 0 1px 3px rgba(0,0,0,0.2);
       color-scheme: dark;
     }
   }
@@ -49,6 +53,7 @@
     --text-dim: #9ca3af;
     --accent: #6d8cff;
     --accent-hover: #5a7af0;
+    --accent-light: color-mix(in srgb, #6d8cff 12%, transparent);
     --border: #2d3140;
     --success: #4ade80;
     --success-bg: #14291e;
@@ -59,6 +64,7 @@
     --none-bg: #1f2230;
     --locked-bg: #1e1533;
     --locked: #a78bfa;
+    --shadow: 0 1px 3px rgba(0,0,0,0.2);
     color-scheme: dark;
   }
 
@@ -75,10 +81,10 @@
     padding-block: 24px;
   }
 
-  .app { max-width: 600px; margin: 0 auto; }
+  .app { max-width: 620px; margin: 0 auto; }
 
   .logo { text-align: center; margin-bottom: 28px; }
-  .logo h1 { font-size: 1.4rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+  .logo h1 { font-size: 1.5rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
   .logo p { font-size: 0.82rem; color: var(--text-dim); margin-top: 2px; }
 
   .card {
@@ -87,6 +93,7 @@
     border-radius: var(--radius);
     padding: 20px;
     margin-bottom: 14px;
+    box-shadow: var(--shadow);
   }
 
   .card h2 {
@@ -94,6 +101,9 @@
     font-weight: 600;
     margin-bottom: 14px;
     color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); margin-bottom: 4px; }
@@ -108,6 +118,7 @@
     margin-bottom: 10px;
     background: var(--bg);
     color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
 
   textarea { resize: vertical; min-height: 70px; }
@@ -129,23 +140,26 @@
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.15s, transform 0.1s;
     color: #fff;
     gap: 6px;
   }
+  .btn:active { transform: scale(0.97); }
 
   .btn-accent { background: var(--accent); }
   .btn-accent:hover { background: var(--accent-hover); }
   .btn-danger { background: var(--danger); }
   .btn-danger:hover { background: var(--danger-hover); }
+  .btn-success { background: var(--success); }
   .btn-ghost {
     background: transparent;
     color: var(--text-dim);
     border: 1px solid var(--border);
   }
   .btn-ghost:hover { background: var(--bg); }
-  .btn-ghost.active { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .btn-ghost.active { color: var(--accent); border-color: var(--accent); background: var(--accent-light); }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
 
   .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .tabs .btn { flex: 1; min-width: 0; padding: 8px 6px; font-size: 0.78rem; }
@@ -179,46 +193,103 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     margin-bottom: 8px;
+    transition: box-shadow 0.15s;
   }
+  .item:hover { box-shadow: var(--shadow); }
 
   .item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
   .item-title a { color: var(--accent); text-decoration: none; }
   .item-title a:hover { text-decoration: underline; }
   .item-meta { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; }
-  .item-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .item-actions { display: flex; gap: 6px; margin-top: 10px; }
 
   .item-question {
     font-size: 0.82rem;
     color: var(--text);
-    margin-top: 6px;
-    padding: 8px 10px;
+    margin-top: 8px;
+    padding: 10px 12px;
     background: var(--bg);
-    border-radius: 6px;
+    border-radius: 8px;
     border-left: 3px solid var(--accent);
   }
-  .item-question strong { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 2px; }
+  .item-question strong { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .item-answers { margin-top: 6px; }
+  .item-answers .mini-answer {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 4px 8px;
+    background: var(--surface);
+    border-radius: 4px;
+    margin-top: 3px;
+    border: 1px solid var(--border);
+  }
 
   .answer-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
   .answer-row input[type="text"] { flex: 1; margin-bottom: 0; }
   .answer-row input[type="radio"] { width: auto; margin: 0; accent-color: var(--accent); }
 
+  /* Practice / Quiz mode */
   .q-card {
-    padding: 14px;
+    padding: 16px;
     border: 1px solid var(--border);
     border-radius: 10px;
     margin-bottom: 10px;
+    transition: box-shadow 0.15s;
   }
-  .q-card .q-unit { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; }
-  .q-card p { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
-  .q-answer {
-    padding: 8px 12px;
+  .q-card:hover { box-shadow: var(--shadow); }
+  .q-card .q-unit { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .q-card .q-text { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+
+  .q-option {
+    padding: 10px 14px;
     background: var(--bg);
-    border-radius: 6px;
-    margin-bottom: 4px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 6px;
     font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .q-option:hover { border-color: var(--accent); }
+  .q-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .q-option .q-letter {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.75rem; color: var(--text-dim);
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .q-option.selected .q-letter {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
   }
 
-  .profile-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 0.9rem; }
+  .q-hidden { filter: blur(6px); pointer-events: none; user-select: none; }
+  .q-reveal-bar {
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .practice-controls {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .practice-controls label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8rem; font-weight: 500; color: var(--text);
+    cursor: pointer; margin-bottom: 0;
+  }
+  .practice-controls input[type="checkbox"] {
+    width: auto; margin: 0; accent-color: var(--accent);
+  }
+
+  .profile-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 0.9rem; align-items: baseline; }
   .profile-grid dt { font-weight: 600; color: var(--text-dim); }
   .token-box {
     word-break: break-all;
@@ -229,13 +300,36 @@
     font-size: 0.72rem;
     margin-top: 12px;
     color: var(--text-dim);
+    position: relative;
+  }
+  .token-copy {
+    position: absolute; top: 6px; right: 6px;
+    padding: 4px 10px; font-size: 0.7rem;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 600;
   }
 
-  .pages { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+  .pages { display: flex; gap: 6px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { color: var(--text-dim); display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+
+  .empty-state { text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.85rem; }
 
   [hidden] { display: none !important; }
 
   .sub-note { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; }
+
+  .stat-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .stat-box {
+    flex: 1; text-align: center; padding: 10px;
+    background: var(--bg); border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .stat-box .stat-num { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+  .stat-box .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
 </style>
 
 <div class="app">
@@ -251,7 +345,7 @@
       <div id="auth-msg" class="msg"></div>
       <label for="email">Email ECE</label>
       <input type="email" id="email" placeholder="prenom.nom@edu.ece.fr">
-      <button class="btn btn-accent" style="width:100%" onclick="requestCode()">Envoyer le code</button>
+      <button class="btn btn-accent" style="width:100%" onclick="requestCode()" id="btn-send-code">Envoyer le code</button>
     </div>
     <div class="card" id="step-code" hidden>
       <h2>Code de vérification</h2>
@@ -259,7 +353,7 @@
       <p class="sub-note">Vérifie ta boîte mail, le code expire dans 5 minutes.</p>
       <label for="code">Code à 6 chiffres</label>
       <input type="text" id="code" placeholder="000000" maxlength="6">
-      <button class="btn btn-accent" style="width:100%" onclick="requestToken()">Valider</button>
+      <button class="btn btn-accent" style="width:100%" onclick="requestToken()" id="btn-verify">Valider</button>
     </div>
   </div>
 
@@ -277,6 +371,7 @@
     <div class="card" id="tab-assignments">
       <h2>Mes devoirs</h2>
       <div id="a-msg" class="msg"></div>
+      <div id="a-stats"></div>
       <div id="a-list"></div>
     </div>
 
@@ -293,7 +388,7 @@
       <div class="answer-row"><input type="radio" name="correct" value="1"><input type="text" id="a1" placeholder="Réponse B"></div>
       <div class="answer-row"><input type="radio" name="correct" value="2"><input type="text" id="a2" placeholder="Réponse C"></div>
       <div class="answer-row"><input type="radio" name="correct" value="3"><input type="text" id="a3" placeholder="Réponse D"></div>
-      <div style="margin-top:12px"><button class="btn btn-accent" style="width:100%" onclick="submitQ()">Envoyer</button></div>
+      <div style="margin-top:12px"><button class="btn btn-accent" style="width:100%" onclick="submitQ()" id="btn-submit">Envoyer</button></div>
     </div>
 
     <!-- MODIFIER -->
@@ -308,17 +403,20 @@
       <div class="answer-row"><input type="radio" name="ecorrect" value="1"><input type="text" id="ea1"></div>
       <div class="answer-row"><input type="radio" name="ecorrect" value="2"><input type="text" id="ea2"></div>
       <div class="answer-row"><input type="radio" name="ecorrect" value="3"><input type="text" id="ea3"></div>
-      <div id="e-warn" class="msg err" style="display:block;margin-top:10px">L'API ne révèle pas la bonne réponse. Re sélectionne la correcte avant de sauvegarder.</div>
+      <div class="sub-note" style="margin-top:10px">L'API ne révèle pas la bonne réponse. Pense à resélectionner la correcte avant de sauvegarder.</div>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-accent" style="flex:1" onclick="updateSub()">Sauvegarder</button>
+        <button class="btn btn-accent" style="flex:1" onclick="updateSub()" id="btn-update">Sauvegarder</button>
         <button class="btn btn-ghost" style="flex:1" onclick="showTab('assignments')">Annuler</button>
       </div>
     </div>
 
     <!-- S'ENTRAÎNER -->
     <div class="card" id="tab-practice" hidden>
-      <h2>Questions approuvées</h2>
+      <h2>S'entraîner</h2>
       <div id="p-msg" class="msg"></div>
+      <div class="practice-controls">
+        <label><input type="checkbox" id="quiz-mode" onchange="reloadQuestions()"> Mode quiz (masquer les réponses)</label>
+      </div>
       <div id="p-list"></div>
       <div class="pages" id="p-pages"></div>
     </div>
@@ -328,7 +426,10 @@
       <h2>Mon profil</h2>
       <div id="pr-msg" class="msg"></div>
       <dl class="profile-grid" id="pr-info"></dl>
-      <div class="token-box" id="pr-token"></div>
+      <div class="token-box" id="pr-token-box">
+        <button class="token-copy" onclick="copyToken()">Copier</button>
+        <span id="pr-token"></span>
+      </div>
     </div>
   </div>
 </div>
@@ -337,12 +438,17 @@
 const API = 'https://mcq-proxy.ppredator367.workers.dev';
 function apiUrl(path) { return API + path; }
 let token, email;
+let currentPage = 1;
 
 try { token = localStorage.getItem('mcq_token') || ''; } catch { token = ''; }
 try { email = localStorage.getItem('mcq_email') || ''; } catch { email = ''; }
 
 if (email) document.getElementById('email').value = email;
 if (token) showApp();
+
+// Enter key support for auth
+document.getElementById('email').addEventListener('keydown', e => { if (e.key === 'Enter') requestCode(); });
+document.getElementById('code').addEventListener('keydown', e => { if (e.key === 'Enter') requestToken(); });
 
 function msg(id, txt, ok) {
   const el = document.getElementById(id);
@@ -354,6 +460,16 @@ function clr(id) {
   const el = document.getElementById(id);
   el.className = 'msg';
   el.textContent = '';
+}
+
+function loading(el) {
+  el.innerHTML = '<div class="loading-text"><span class="spinner"></span> Chargement...</div>';
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
 
 async function api(path, opts = {}) {
@@ -371,28 +487,37 @@ async function api(path, opts = {}) {
   return data;
 }
 
+/* ── AUTH ── */
+
 async function requestCode() {
   clr('auth-msg');
   email = document.getElementById('email').value.trim();
   if (!email) { msg('auth-msg', 'Entre ton email.', false); return; }
+  const btn = document.getElementById('btn-send-code');
+  btn.disabled = true; btn.textContent = 'Envoi...';
   try {
     await api('/auth/code', { method: 'POST', body: JSON.stringify({ email }) });
     try { localStorage.setItem('mcq_email', email); } catch {}
     document.getElementById('step-code').hidden = false;
+    document.getElementById('code').focus();
     msg('auth-msg', 'Code envoyé ! Vérifie ta boîte mail.', true);
   } catch (e) { msg('auth-msg', e.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Envoyer le code'; }
 }
 
 async function requestToken() {
   clr('code-msg');
   const code = document.getElementById('code').value.trim();
   if (!code) { msg('code-msg', 'Entre le code.', false); return; }
+  const btn = document.getElementById('btn-verify');
+  btn.disabled = true; btn.textContent = 'Vérification...';
   try {
     const d = await api('/auth/token', { method: 'POST', body: JSON.stringify({ email, code }) });
     token = d.accessToken;
     try { localStorage.setItem('mcq_token', token); } catch {}
     showApp();
   } catch (e) { msg('code-msg', e.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Valider'; }
 }
 
 function showApp() {
@@ -409,6 +534,8 @@ function logout() {
   document.getElementById('step-code').hidden = true;
 }
 
+/* ── TABS ── */
+
 function showTab(name) {
   ['assignments','submit','practice','profile','edit'].forEach(t => {
     const el = document.getElementById('tab-' + t);
@@ -419,30 +546,36 @@ function showTab(name) {
     b.classList.toggle('active', b.dataset.tab === name);
   });
   if (name === 'assignments') loadAssignments();
-  if (name === 'practice') loadQuestions(1);
+  if (name === 'practice') loadQuestions(currentPage);
   if (name === 'profile') loadProfile();
 }
 
+/* ── ASSIGNMENTS ── */
+
 const STATUS = {
   none: 'Non soumis',
-  submitted: 'Soumis',
+  submitted: 'En attente',
   locked: 'Accepté',
   approved: 'Approuvé',
   excused: 'Dispensé'
 };
 
 function fmtDate(iso) {
-  if (!iso) return '—';
+  if (!iso) return '';
   return new Date(iso).toLocaleDateString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
 }
 
 async function loadAssignments() {
   clr('a-msg');
   const list = document.getElementById('a-list');
-  list.innerHTML = '<p style="color:var(--text-dim)">Chargement...</p>';
+  const stats = document.getElementById('a-stats');
+  loading(list);
+  stats.innerHTML = '';
   try {
     const d = await api('/submissions');
     const items = d.items;
+
+    // Populate unit selector for submit tab
     const sel = document.getElementById('unit-sel');
     sel.innerHTML = '';
     items.forEach(a => {
@@ -451,51 +584,87 @@ async function loadAssignments() {
       o.textContent = a.unitOrder + '. ' + a.unit;
       sel.appendChild(o);
     });
-    if (!items.length) { list.innerHTML = '<p style="color:var(--text-dim)">Aucun devoir.</p>'; return; }
+
+    if (!items.length) {
+      list.innerHTML = '<div class="empty-state">Aucun devoir disponible.</div>';
+      return;
+    }
+
+    // Stats
+    const total = items.length;
+    const done = items.filter(a => a.status !== 'none').length;
+    const accepted = items.filter(a => a.status === 'locked' || a.status === 'approved').length;
+    stats.innerHTML = `<div class="stat-row">
+      <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-label">Chapitres</div></div>
+      <div class="stat-box"><div class="stat-num">${done}/${total}</div><div class="stat-label">Soumis</div></div>
+      <div class="stat-box"><div class="stat-num">${accepted}</div><div class="stat-label">Acceptés</div></div>
+    </div>`;
+
     list.innerHTML = '';
 
-    for (const a of items) {
+    // Fetch submission details in parallel for items that have one
+    const subDetails = {};
+    const fetches = items
+      .filter(a => a.submission)
+      .map(a => api('/submissions/' + a.submission.id)
+        .then(sub => { subDetails[a.submission.id] = sub; })
+        .catch(() => {})
+      );
+    await Promise.all(fetches);
+
+    items.forEach(a => {
       const div = document.createElement('div');
       div.className = 'item';
 
-      // Titre avec lien vers le chapitre si disponible
-      let titleHtml = '';
+      // Title with link
+      let titleHtml;
       if (a.unitUrl) {
-        titleHtml = `<div class="item-title"><a href="${a.unitUrl}" target="_blank" rel="noopener">${a.unitOrder}. ${a.unit}</a></div>`;
+        titleHtml = `<div class="item-title"><a href="${esc(a.unitUrl)}" target="_blank" rel="noopener">${esc(a.unitOrder + '. ' + a.unit)}</a></div>`;
       } else {
-        titleHtml = `<div class="item-title">${a.unitOrder}. ${a.unit}</div>`;
+        titleHtml = `<div class="item-title">${esc(a.unitOrder + '. ' + a.unit)}</div>`;
       }
 
-      let metaHtml = `<div class="item-meta">Ouvert le ${fmtDate(a.opensAt)}`;
-      if (a.dueAt) metaHtml += ` · Limite ${fmtDate(a.dueAt)}`;
-      metaHtml += '</div>';
+      // Meta
+      let metaParts = [];
+      if (a.opensAt) metaParts.push('Ouvert le ' + fmtDate(a.opensAt));
+      if (a.dueAt) metaParts.push('Limite ' + fmtDate(a.dueAt));
+      let metaHtml = metaParts.length ? `<div class="item-meta">${metaParts.join(' · ')}</div>` : '';
 
+      // Badge
       let statusLabel = STATUS[a.status] || a.status;
       let badgeClass = 'badge-' + a.status;
 
+      // Submission details
       let questionHtml = '';
+      if (a.submission && subDetails[a.submission.id]) {
+        const sub = subDetails[a.submission.id];
+        questionHtml = `<div class="item-question">
+          <strong>Ta question</strong>
+          ${esc(sub.question)}
+          <div class="item-answers">
+            ${sub.answers.map((ans, i) => `<div class="mini-answer">${String.fromCharCode(65 + i)}. ${esc(ans.text)}</div>`).join('')}
+          </div>
+        </div>`;
+      }
+
+      // Actions
       let actions = '';
-
-      // Si une soumission existe, charger les détails pour afficher la question
-      if (a.submission) {
-        try {
-          const sub = await api('/submissions/' + a.submission.id);
-          questionHtml = `<div class="item-question"><strong>Ta question :</strong>${sub.question}</div>`;
-        } catch { /* silently skip */ }
-
-        if (a.status === 'submitted') {
-          actions = `<div class="item-actions">
-            <button class="btn btn-ghost" style="flex:1;font-size:0.78rem" onclick="editSub(${a.submission.id})">Modifier</button>
-            <button class="btn btn-danger" style="flex:1;font-size:0.78rem" onclick="delSub(${a.submission.id})">Supprimer</button>
-          </div>`;
-        }
+      if (a.submission && a.status === 'submitted') {
+        actions = `<div class="item-actions">
+          <button class="btn btn-accent btn-sm" style="flex:1" onclick="editSub(${a.submission.id})">Modifier</button>
+          <button class="btn btn-danger btn-sm" style="flex:1" onclick="delSub(${a.submission.id})">Supprimer</button>
+        </div>`;
+      } else if (a.status === 'none') {
+        actions = `<div class="item-actions">
+          <button class="btn btn-accent btn-sm" style="flex:1" onclick="goSubmit(${a.unitOrder})">Soumettre une question</button>
+        </div>`;
       }
 
       div.innerHTML = titleHtml + metaHtml +
         `<span class="badge ${badgeClass}">${statusLabel}</span>` +
         questionHtml + actions;
       list.appendChild(div);
-    }
+    });
   } catch (e) {
     if (e.message.includes('authentication') || e.message.includes('401')) {
       logout();
@@ -503,6 +672,13 @@ async function loadAssignments() {
     } else { msg('a-msg', e.message, false); list.innerHTML = ''; }
   }
 }
+
+function goSubmit(unitOrder) {
+  showTab('submit');
+  document.getElementById('unit-sel').value = unitOrder;
+}
+
+/* ── SUBMIT ── */
 
 async function submitQ() {
   clr('s-msg');
@@ -516,13 +692,18 @@ async function submitQ() {
     answers.push({ text: t, isCorrect: i === ci });
   }
   if (!question) { msg('s-msg', 'Écris une question.', false); return; }
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true; btn.textContent = 'Envoi...';
   try {
     await api('/submissions', { method: 'POST', body: JSON.stringify({ unitOrder, question, answers }) });
-    msg('s-msg', 'Question soumise !', true);
+    msg('s-msg', 'Question soumise avec succès !', true);
     document.getElementById('q-text').value = '';
     for (let i = 0; i < 4; i++) document.getElementById('a' + i).value = '';
   } catch (e) { msg('s-msg', e.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Envoyer'; }
 }
+
+/* ── EDIT ── */
 
 async function editSub(id) {
   clr('e-msg');
@@ -548,11 +729,14 @@ async function updateSub() {
     answers.push({ text: t, isCorrect: i === ci });
   }
   if (!question) { msg('e-msg', 'Écris une question.', false); return; }
+  const btn = document.getElementById('btn-update');
+  btn.disabled = true; btn.textContent = 'Sauvegarde...';
   try {
     await api('/submissions/' + id, { method: 'PUT', body: JSON.stringify({ question, answers }) });
-    msg('e-msg', 'Modifié !', true);
+    msg('e-msg', 'Modifié avec succès !', true);
     setTimeout(() => showTab('assignments'), 800);
   } catch (e) { msg('e-msg', e.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Sauvegarder'; }
 }
 
 async function delSub(id) {
@@ -563,38 +747,73 @@ async function delSub(id) {
   } catch (e) { msg('a-msg', e.message, false); }
 }
 
+/* ── PRACTICE ── */
+
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+function reloadQuestions() {
+  loadQuestions(currentPage);
+}
+
 async function loadQuestions(page) {
+  currentPage = page;
   clr('p-msg');
   const list = document.getElementById('p-list');
-  list.innerHTML = '<p style="color:var(--text-dim)">Chargement...</p>';
+  loading(list);
+  const quizMode = document.getElementById('quiz-mode').checked;
   try {
     const d = await api('/questions?page=' + page + '&limit=10', { headers: {} });
     if (!d.items.length) {
-      list.innerHTML = '<p style="color:var(--text-dim)">Aucune question approuvée pour le moment.</p>';
+      list.innerHTML = '<div class="empty-state">Aucune question approuvée pour le moment.</div>';
       document.getElementById('p-pages').innerHTML = '';
       return;
     }
     list.innerHTML = '';
-    d.items.forEach((q, i) => {
+    d.items.forEach((q, idx) => {
+      const num = (page - 1) * 10 + idx + 1;
       const div = document.createElement('div');
       div.className = 'q-card';
-      div.innerHTML = `<div class="q-unit">${q.unit || ''}</div><p>${(page - 1) * 10 + i + 1}. ${q.question}</p>`;
-      q.answers.forEach(a => {
-        const ans = document.createElement('div');
-        ans.className = 'q-answer';
-        // L'API renvoie answers comme string[] ou {text}[]
-        ans.textContent = typeof a === 'string' ? a : a.text;
-        div.appendChild(ans);
-      });
+      div.id = 'qcard-' + idx;
+
+      let unitHtml = q.unit ? `<div class="q-unit">${esc(q.unit)}</div>` : '';
+      let questionHtml = `<div class="q-text">${num}. ${esc(q.question)}</div>`;
+
+      let answersHtml = '';
+      const answers = q.answers || [];
+
+      if (quizMode) {
+        // Quiz mode: clickable options, hidden until revealed
+        answersHtml = `<div class="q-options" id="qopts-${idx}">`;
+        answers.forEach((a, ai) => {
+          const text = typeof a === 'string' ? a : a.text;
+          answersHtml += `<div class="q-option" onclick="selectOption(${idx}, ${ai})" id="qopt-${idx}-${ai}">
+            <span class="q-letter">${LETTERS[ai]}</span>
+            <span>${esc(text)}</span>
+          </div>`;
+        });
+        answersHtml += '</div>';
+        answersHtml += `<div class="q-reveal-bar" id="qreveal-${idx}">
+          <button class="btn btn-ghost btn-sm" onclick="revealAnswer(${idx})" id="qrevealbtn-${idx}" disabled>Choisir d'abord une réponse</button>
+        </div>`;
+      } else {
+        // Normal mode: show all answers
+        answers.forEach((a, ai) => {
+          const text = typeof a === 'string' ? a : a.text;
+          answersHtml += `<div class="q-answer">${LETTERS[ai]}. ${esc(text)}</div>`;
+        });
+      }
+
+      div.innerHTML = unitHtml + questionHtml + answersHtml;
       list.appendChild(div);
     });
+
+    // Pagination
     const total = Math.ceil(d.total / d.limit);
     const pg = document.getElementById('p-pages');
     pg.innerHTML = '';
     for (let p = 1; p <= total; p++) {
       const b = document.createElement('button');
-      b.className = 'btn ' + (p === page ? 'btn-accent' : 'btn-ghost');
-      b.style.cssText = 'padding:6px 12px;font-size:0.78rem';
+      b.className = 'btn btn-sm ' + (p === page ? 'btn-accent' : 'btn-ghost');
       b.textContent = p;
       b.onclick = () => loadQuestions(p);
       pg.appendChild(b);
@@ -602,18 +821,56 @@ async function loadQuestions(page) {
   } catch (e) { msg('p-msg', e.message, false); list.innerHTML = ''; }
 }
 
+function selectOption(qIdx, aIdx) {
+  // Deselect all for this question
+  const opts = document.getElementById('qopts-' + qIdx);
+  if (!opts || opts.dataset.revealed) return;
+  opts.querySelectorAll('.q-option').forEach(o => o.classList.remove('selected'));
+  // Select this one
+  document.getElementById('qopt-' + qIdx + '-' + aIdx).classList.add('selected');
+  opts.dataset.selected = aIdx;
+  // Enable reveal button
+  const btn = document.getElementById('qrevealbtn-' + qIdx);
+  btn.disabled = false;
+  btn.textContent = 'Voir les réponses';
+}
+
+function revealAnswer(qIdx) {
+  const opts = document.getElementById('qopts-' + qIdx);
+  if (!opts) return;
+  opts.dataset.revealed = 'true';
+  // Disable further selection
+  opts.querySelectorAll('.q-option').forEach(o => { o.style.cursor = 'default'; });
+  // Note: l'API ne révèle pas la bonne réponse, on montre juste toutes les options
+  const btn = document.getElementById('qrevealbtn-' + qIdx);
+  btn.textContent = 'Réponse choisie : ' + LETTERS[opts.dataset.selected];
+  btn.disabled = true;
+  btn.classList.remove('btn-ghost');
+  btn.classList.add('btn-accent');
+}
+
+/* ── PROFILE ── */
+
 async function loadProfile() {
   clr('pr-msg');
   const info = document.getElementById('pr-info');
-  info.innerHTML = '';
+  info.innerHTML = '<div class="loading-text"><span class="spinner"></span> Chargement...</div>';
   try {
     const d = await api('/me');
     info.innerHTML = `<dt>ID</dt><dd>${d.id}</dd>
-      <dt>Email</dt><dd>${d.email}</dd>
-      <dt>Prénom</dt><dd>${d.firstName || '—'}</dd>
-      <dt>Nom</dt><dd>${d.lastName || '—'}</dd>
-      <dt>Classe</dt><dd>${d.class.code}</dd>`;
+      <dt>Email</dt><dd>${esc(d.email)}</dd>
+      <dt>Prénom</dt><dd>${esc(d.firstName || '—')}</dd>
+      <dt>Nom</dt><dd>${esc(d.lastName || '—')}</dd>
+      <dt>Classe</dt><dd>${esc(d.class.code)}</dd>`;
     document.getElementById('pr-token').textContent = token;
-  } catch (e) { msg('pr-msg', e.message, false); }
+  } catch (e) { msg('pr-msg', e.message, false); info.innerHTML = ''; }
+}
+
+function copyToken() {
+  navigator.clipboard.writeText(token).then(() => {
+    const btn = document.querySelector('.token-copy');
+    btn.textContent = 'Copié !';
+    setTimeout(() => { btn.textContent = 'Copier'; }, 1500);
+  }).catch(() => {});
 }
 </script>
