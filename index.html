@@ -259,6 +259,8 @@
   .q-option:hover:not(.locked) { border-color: var(--accent); transform: translateX(2px); }
   .q-option.selected { border-color: var(--accent); background: var(--accent-light); }
   .q-option.locked { cursor: default; }
+  .q-option .q-answer-text { transition: filter 0.3s, opacity 0.3s; }
+  .q-option.hidden-answer .q-answer-text { filter: blur(8px); opacity: 0.3; user-select: none; pointer-events: none; }
   .q-option .q-letter {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -410,16 +412,21 @@
     <div class="card" id="tab-submit" hidden>
       <h2>Soumettre une question</h2>
       <div id="s-msg" class="msg"></div>
-      <label for="unit-sel">Chapitre</label>
+      <p class="sub-note">Crée une question QCM pour tes camarades. Choisis un chapitre, rédige la question, propose 4 réponses et coche la bonne.</p>
+      <label for="unit-sel">1. Choisis le chapitre</label>
       <select id="unit-sel"></select>
-      <label for="q-text">Question</label>
-      <textarea id="q-text" placeholder="Écris ta question ici (Markdown accepté)"></textarea>
-      <label>Réponses (sélectionne la bonne)</label>
-      <div class="answer-row"><input type="radio" name="correct" value="0" checked><input type="text" id="a0" placeholder="Réponse A"></div>
-      <div class="answer-row"><input type="radio" name="correct" value="1"><input type="text" id="a1" placeholder="Réponse B"></div>
-      <div class="answer-row"><input type="radio" name="correct" value="2"><input type="text" id="a2" placeholder="Réponse C"></div>
-      <div class="answer-row"><input type="radio" name="correct" value="3"><input type="text" id="a3" placeholder="Réponse D"></div>
-      <div style="margin-top:12px"><button class="btn btn-accent" style="width:100%" onclick="submitQ()" id="btn-submit">Envoyer</button></div>
+      <label for="q-text">2. Rédige ta question</label>
+      <textarea id="q-text" placeholder="Ex : Quel protocole HTTP est utilisé pour..." oninput="updatePreview()"></textarea>
+      <label>3. Propose 4 réponses et coche la correcte</label>
+      <div class="answer-row"><input type="radio" name="correct" value="0" checked onchange="updatePreview()"><input type="text" id="a0" placeholder="A. Réponse correcte" oninput="updatePreview()"></div>
+      <div class="answer-row"><input type="radio" name="correct" value="1" onchange="updatePreview()"><input type="text" id="a1" placeholder="B. Proposition fausse" oninput="updatePreview()"></div>
+      <div class="answer-row"><input type="radio" name="correct" value="2" onchange="updatePreview()"><input type="text" id="a2" placeholder="C. Proposition fausse" oninput="updatePreview()"></div>
+      <div class="answer-row"><input type="radio" name="correct" value="3" onchange="updatePreview()"><input type="text" id="a3" placeholder="D. Proposition fausse" oninput="updatePreview()"></div>
+      <div id="submit-preview" style="margin-top:14px" hidden>
+        <label>Aperçu de ta question</label>
+        <div class="q-card" id="preview-card" style="margin-bottom:0"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-accent" style="width:100%" onclick="submitQ()" id="btn-submit">Envoyer ma question</button></div>
     </div>
 
     <!-- MODIFIER -->
@@ -651,6 +658,7 @@ async function loadAssignments() {
     await Promise.all(fetches);
 
     items.forEach(a => {
+      console.log('Assignment:', a.unit, 'status:', a.status, 'submission:', a.submission);
       const div = document.createElement('div');
       div.className = 'item';
 
@@ -685,17 +693,23 @@ async function loadAssignments() {
         </div>`;
       }
 
-      // Actions
+      // Actions based on status
       let actions = '';
-      if (a.submission && a.status === 'submitted') {
-        actions = `<div class="item-actions">
-          <button class="btn btn-accent btn-sm" style="flex:1" onclick="editSub(${a.submission.id})">Modifier</button>
-          <button class="btn btn-danger btn-sm" style="flex:1" onclick="delSub(${a.submission.id})">Supprimer</button>
-        </div>`;
-      } else if (a.status === 'none') {
+      if (a.status === 'none') {
+        // No submission yet
         actions = `<div class="item-actions">
           <button class="btn btn-accent btn-sm" style="flex:1" onclick="goSubmit(${a.unitOrder})">Soumettre une question</button>
         </div>`;
+      } else if (a.submission && a.status === 'submitted') {
+        // Submitted but not yet accepted: can modify or delete
+        actions = `<div class="item-actions">
+          <button class="btn btn-accent btn-sm" style="flex:1" onclick="editSub(${a.submission.id})">&#9998; Modifier</button>
+          <button class="btn btn-danger btn-sm" style="flex:1" onclick="delSub(${a.submission.id})">&#128465; Supprimer</button>
+        </div>
+        <div class="sub-note" style="margin-top:6px;font-size:0.75rem">Tu peux modifier ta question tant qu'elle n'a pas été acceptée.</div>`;
+      } else if (a.submission && (a.status === 'locked' || a.status === 'approved')) {
+        // Accepted: cannot modify
+        actions = `<div class="sub-note" style="margin-top:8px;font-size:0.75rem;color:var(--locked)">Question acceptée, modification impossible.</div>`;
       }
 
       div.innerHTML = titleHtml + metaHtml +
@@ -718,6 +732,29 @@ function goSubmit(unitOrder) {
 
 /* ── SUBMIT ── */
 
+function updatePreview() {
+  const q = document.getElementById('q-text').value.trim();
+  const answers = [];
+  for (let i = 0; i < 4; i++) answers.push(document.getElementById('a' + i).value.trim());
+  const ci = parseInt(document.querySelector('input[name="correct"]:checked').value);
+  const preview = document.getElementById('submit-preview');
+  const card = document.getElementById('preview-card');
+  if (!q && !answers.some(a => a)) {
+    preview.hidden = true;
+    return;
+  }
+  preview.hidden = false;
+  let html = `<div class="q-text">${esc(q || '(ta question)')}</div>`;
+  answers.forEach((a, i) => {
+    const isCor = i === ci;
+    html += `<div class="q-option${isCor ? ' selected' : ''}" style="cursor:default">
+      <span class="q-letter" style="${isCor ? 'background:var(--success);border-color:var(--success);color:#fff' : ''}">${LETTERS[i]}</span>
+      <span>${a ? esc(a) : '<span style="color:var(--text-dim)">(réponse ' + LETTERS[i] + ')</span>'}</span>
+    </div>`;
+  });
+  card.innerHTML = html;
+}
+
 async function submitQ() {
   clr('s-msg');
   const unitOrder = parseInt(document.getElementById('unit-sel').value);
@@ -734,9 +771,10 @@ async function submitQ() {
   btn.disabled = true; btn.textContent = 'Envoi...';
   try {
     await api('/submissions', { method: 'POST', body: JSON.stringify({ unitOrder, question, answers }) });
-    msg('s-msg', 'Question soumise avec succès !', true);
+    msg('s-msg', 'Question soumise avec succès ! Tu peux la voir dans l\'onglet Devoirs.', true);
     document.getElementById('q-text').value = '';
     for (let i = 0; i < 4; i++) document.getElementById('a' + i).value = '';
+    document.getElementById('submit-preview').hidden = true;
   } catch (e) { msg('s-msg', e.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Envoyer'; }
 }
@@ -961,19 +999,19 @@ async function loadQuestionsList(page) {
       let unitHtml = q.unit ? `<div class="q-unit">${esc(q.unit)}</div>` : '';
       let questionHtml = `<div class="q-text">${num}. ${esc(q.question)}</div>`;
 
-      // Answers with click-to-reveal
+      // Answers hidden by default
       const answers = q.answers || [];
-      let answersHtml = `<div id="list-opts-${idx}">`;
+      let answersHtml = `<div id="list-opts-${idx}" class="list-answers-hidden">`;
       answers.forEach((a, ai) => {
         const text = typeof a === 'string' ? a : a.text;
-        answersHtml += `<div class="q-option" onclick="listSelect(${idx}, ${ai})" id="list-opt-${idx}-${ai}">
+        answersHtml += `<div class="q-option hidden-answer" id="list-opt-${idx}-${ai}">
           <span class="q-letter">${LETTERS[ai]}</span>
-          <span>${esc(text)}</span>
+          <span class="q-answer-text">${esc(text)}</span>
         </div>`;
       });
       answersHtml += '</div>';
       answersHtml += `<div class="q-confirm-bar" id="list-actions-${idx}">
-        <button class="btn btn-ghost btn-sm" onclick="listReveal(${idx})">Afficher les réponses</button>
+        <button class="btn btn-accent btn-sm" onclick="listReveal(${idx})">Afficher les ${answers.length} réponses</button>
       </div>`;
       answersHtml += `<div class="q-result" id="list-result-${idx}"></div>`;
 
@@ -995,31 +1033,32 @@ async function loadQuestionsList(page) {
   } catch (e) { msg('p-msg', e.message, false); list.innerHTML = ''; }
 }
 
-function listSelect(qIdx, aIdx) {
-  const container = document.getElementById('list-opts-' + qIdx);
-  if (container.dataset.locked) return;
-  container.querySelectorAll('.q-option').forEach(o => o.classList.remove('selected'));
-  document.getElementById('list-opt-' + qIdx + '-' + aIdx).classList.add('selected');
-  container.dataset.selected = aIdx;
-  // Update button text
-  document.getElementById('list-actions-' + qIdx).innerHTML =
-    `<button class="btn btn-accent btn-sm" onclick="listReveal(${qIdx})">Valider</button>
-     <button class="btn btn-ghost btn-sm" onclick="listReveal(${qIdx})">Afficher sans choisir</button>`;
-}
-
 function listReveal(qIdx) {
   const container = document.getElementById('list-opts-' + qIdx);
-  container.dataset.locked = 'true';
-  container.querySelectorAll('.q-option').forEach(o => o.classList.add('locked'));
+  // Reveal all hidden answers
+  container.querySelectorAll('.q-option').forEach(o => {
+    o.classList.remove('hidden-answer');
+    o.classList.add('locked');
+  });
+  container.classList.remove('list-answers-hidden');
   const result = document.getElementById('list-result-' + qIdx);
-  if (container.dataset.selected !== undefined) {
-    result.className = 'q-result shown info';
-    result.textContent = 'Ta réponse : ' + LETTERS[container.dataset.selected] + '. L\'API ne révèle pas la bonne réponse.';
-  } else {
-    result.className = 'q-result shown info';
-    result.textContent = 'Toutes les réponses sont affichées. L\'API ne révèle pas la bonne réponse.';
-  }
-  document.getElementById('list-actions-' + qIdx).innerHTML = '';
+  result.className = 'q-result shown info';
+  result.textContent = 'Réponses affichées. L\'API ne révèle pas laquelle est correcte.';
+  document.getElementById('list-actions-' + qIdx).innerHTML =
+    '<button class="btn btn-ghost btn-sm" onclick="listHide(' + qIdx + ')">Masquer</button>';
+}
+
+function listHide(qIdx) {
+  const container = document.getElementById('list-opts-' + qIdx);
+  container.querySelectorAll('.q-option').forEach(o => {
+    o.classList.add('hidden-answer');
+    o.classList.remove('locked');
+  });
+  container.classList.add('list-answers-hidden');
+  document.getElementById('list-result-' + qIdx).className = 'q-result';
+  const answers = container.querySelectorAll('.q-option').length;
+  document.getElementById('list-actions-' + qIdx).innerHTML =
+    `<button class="btn btn-accent btn-sm" onclick="listReveal(${qIdx})">Afficher les ${answers} réponses</button>`;
 }
 
 /* ── PROFILE ── */
