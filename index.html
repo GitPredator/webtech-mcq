@@ -17,6 +17,8 @@
     --danger: #dc2626;
     --danger-hover: #b91c1c;
     --none-bg: #f3f4f6;
+    --locked-bg: #ede9fe;
+    --locked: #7c3aed;
     --radius: 12px;
   }
   @media (prefers-color-scheme: dark) {
@@ -35,6 +37,8 @@
       --danger: #f87171;
       --danger-hover: #ef4444;
       --none-bg: #1f2230;
+      --locked-bg: #1e1533;
+      --locked: #a78bfa;
       color-scheme: dark;
     }
   }
@@ -53,6 +57,8 @@
     --danger: #f87171;
     --danger-hover: #ef4444;
     --none-bg: #1f2230;
+    --locked-bg: #1e1533;
+    --locked: #a78bfa;
     color-scheme: dark;
   }
 
@@ -164,6 +170,7 @@
   }
   .badge-none { background: var(--none-bg); color: var(--text-dim); }
   .badge-submitted { background: var(--warning-bg); color: var(--warning); }
+  .badge-locked { background: var(--locked-bg); color: var(--locked); }
   .badge-approved { background: var(--success-bg); color: var(--success); }
   .badge-excused { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
 
@@ -175,8 +182,21 @@
   }
 
   .item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .item-title a { color: var(--accent); text-decoration: none; }
+  .item-title a:hover { text-decoration: underline; }
   .item-meta { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; }
   .item-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+  .item-question {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-top: 6px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+  .item-question strong { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 2px; }
 
   .answer-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
   .answer-row input[type="text"] { flex: 1; margin-bottom: 0; }
@@ -188,6 +208,7 @@
     border-radius: 10px;
     margin-bottom: 10px;
   }
+  .q-card .q-unit { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; }
   .q-card p { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
   .q-answer {
     padding: 8px 12px;
@@ -249,7 +270,7 @@
       <button class="btn btn-ghost" data-tab="submit" onclick="showTab('submit')">Soumettre</button>
       <button class="btn btn-ghost" data-tab="practice" onclick="showTab('practice')">S'entraîner</button>
       <button class="btn btn-ghost" data-tab="profile" onclick="showTab('profile')">Profil</button>
-      <button class="btn btn-danger" style="flex:0;padding:8px 12px" onclick="logout()">✕</button>
+      <button class="btn btn-danger" style="flex:0;padding:8px 12px" onclick="logout()">&#x2715;</button>
     </div>
 
     <!-- DEVOIRS -->
@@ -402,9 +423,16 @@ function showTab(name) {
   if (name === 'profile') loadProfile();
 }
 
-const STATUS = { none: 'Non soumis', submitted: 'Soumis', approved: 'Approuvé', excused: 'Dispensé' };
+const STATUS = {
+  none: 'Non soumis',
+  submitted: 'Soumis',
+  locked: 'Accepté',
+  approved: 'Approuvé',
+  excused: 'Dispensé'
+};
 
 function fmtDate(iso) {
+  if (!iso) return '—';
   return new Date(iso).toLocaleDateString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
 }
 
@@ -425,21 +453,49 @@ async function loadAssignments() {
     });
     if (!items.length) { list.innerHTML = '<p style="color:var(--text-dim)">Aucun devoir.</p>'; return; }
     list.innerHTML = '';
-    items.forEach(a => {
+
+    for (const a of items) {
       const div = document.createElement('div');
       div.className = 'item';
-      let actions = '';
-      if (a.submission && a.status === 'submitted') {
-        actions = `<div class="item-actions">
-          <button class="btn btn-ghost" style="flex:1;font-size:0.78rem" onclick="editSub(${a.submission.id})">Modifier</button>
-          <button class="btn btn-danger" style="flex:1;font-size:0.78rem" onclick="delSub(${a.submission.id})">Supprimer</button>
-        </div>`;
+
+      // Titre avec lien vers le chapitre si disponible
+      let titleHtml = '';
+      if (a.unitUrl) {
+        titleHtml = `<div class="item-title"><a href="${a.unitUrl}" target="_blank" rel="noopener">${a.unitOrder}. ${a.unit}</a></div>`;
+      } else {
+        titleHtml = `<div class="item-title">${a.unitOrder}. ${a.unit}</div>`;
       }
-      div.innerHTML = `<div class="item-title">${a.unitOrder}. ${a.unit}</div>
-        <div class="item-meta">Ouvert le ${fmtDate(a.opensAt)} · Limite ${fmtDate(a.dueAt)}</div>
-        <span class="badge badge-${a.status}">${STATUS[a.status]}</span>${actions}`;
+
+      let metaHtml = `<div class="item-meta">Ouvert le ${fmtDate(a.opensAt)}`;
+      if (a.dueAt) metaHtml += ` · Limite ${fmtDate(a.dueAt)}`;
+      metaHtml += '</div>';
+
+      let statusLabel = STATUS[a.status] || a.status;
+      let badgeClass = 'badge-' + a.status;
+
+      let questionHtml = '';
+      let actions = '';
+
+      // Si une soumission existe, charger les détails pour afficher la question
+      if (a.submission) {
+        try {
+          const sub = await api('/submissions/' + a.submission.id);
+          questionHtml = `<div class="item-question"><strong>Ta question :</strong>${sub.question}</div>`;
+        } catch { /* silently skip */ }
+
+        if (a.status === 'submitted') {
+          actions = `<div class="item-actions">
+            <button class="btn btn-ghost" style="flex:1;font-size:0.78rem" onclick="editSub(${a.submission.id})">Modifier</button>
+            <button class="btn btn-danger" style="flex:1;font-size:0.78rem" onclick="delSub(${a.submission.id})">Supprimer</button>
+          </div>`;
+        }
+      }
+
+      div.innerHTML = titleHtml + metaHtml +
+        `<span class="badge ${badgeClass}">${statusLabel}</span>` +
+        questionHtml + actions;
       list.appendChild(div);
-    });
+    }
   } catch (e) {
     if (e.message.includes('authentication') || e.message.includes('401')) {
       logout();
@@ -522,11 +578,12 @@ async function loadQuestions(page) {
     d.items.forEach((q, i) => {
       const div = document.createElement('div');
       div.className = 'q-card';
-      div.innerHTML = `<p>${(page - 1) * 10 + i + 1}. ${q.question}</p>`;
+      div.innerHTML = `<div class="q-unit">${q.unit || ''}</div><p>${(page - 1) * 10 + i + 1}. ${q.question}</p>`;
       q.answers.forEach(a => {
         const ans = document.createElement('div');
         ans.className = 'q-answer';
-        ans.textContent = a.text;
+        // L'API renvoie answers comme string[] ou {text}[]
+        ans.textContent = typeof a === 'string' ? a : a.text;
         div.appendChild(ans);
       });
       list.appendChild(div);
