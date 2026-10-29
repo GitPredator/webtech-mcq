@@ -1,0 +1,562 @@
+<title>Webtech MCQ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: single-column centered app, card-based sections */
+  :root {
+    --bg: #f8f9fb;
+    --surface: #ffffff;
+    --text: #1a1d26;
+    --text-dim: #6b7280;
+    --accent: #3b5bdb;
+    --accent-hover: #2b4bc6;
+    --border: #e5e7eb;
+    --success: #16a34a;
+    --success-bg: #dcfce7;
+    --warning: #d97706;
+    --warning-bg: #fef3c7;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --none-bg: #f3f4f6;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318;
+      --surface: #1a1d26;
+      --text: #e5e7eb;
+      --text-dim: #9ca3af;
+      --accent: #6d8cff;
+      --accent-hover: #5a7af0;
+      --border: #2d3140;
+      --success: #4ade80;
+      --success-bg: #14291e;
+      --warning: #fbbf24;
+      --warning-bg: #2a2314;
+      --danger: #f87171;
+      --danger-hover: #ef4444;
+      --none-bg: #1f2230;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318;
+    --surface: #1a1d26;
+    --text: #e5e7eb;
+    --text-dim: #9ca3af;
+    --accent: #6d8cff;
+    --accent-hover: #5a7af0;
+    --border: #2d3140;
+    --success: #4ade80;
+    --success-bg: #14291e;
+    --warning: #fbbf24;
+    --warning-bg: #2a2314;
+    --danger: #f87171;
+    --danger-hover: #ef4444;
+    --none-bg: #1f2230;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 24px;
+  }
+
+  .app { max-width: 600px; margin: 0 auto; }
+
+  .logo { text-align: center; margin-bottom: 28px; }
+  .logo h1 { font-size: 1.4rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+  .logo p { font-size: 0.82rem; color: var(--text-dim); margin-top: 2px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+
+  .card h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--accent);
+  }
+
+  label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); margin-bottom: 4px; }
+
+  input[type="email"], input[type="text"], select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    margin-bottom: 10px;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+    color: #fff;
+    gap: 6px;
+  }
+
+  .btn-accent { background: var(--accent); }
+  .btn-accent:hover { background: var(--accent-hover); }
+  .btn-danger { background: var(--danger); }
+  .btn-danger:hover { background: var(--danger-hover); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-ghost.active { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tabs .btn { flex: 1; min-width: 0; padding: 8px 6px; font-size: 0.78rem; }
+
+  .msg {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    display: none;
+  }
+  .msg.ok { display: block; background: var(--success-bg); color: var(--success); }
+  .msg.err { display: block; background: color-mix(in srgb, var(--danger) 10%, transparent); color: var(--danger); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .badge-none { background: var(--none-bg); color: var(--text-dim); }
+  .badge-submitted { background: var(--warning-bg); color: var(--warning); }
+  .badge-approved { background: var(--success-bg); color: var(--success); }
+  .badge-excused { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+
+  .item {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+
+  .item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .item-meta { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; }
+  .item-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+  .answer-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .answer-row input[type="text"] { flex: 1; margin-bottom: 0; }
+  .answer-row input[type="radio"] { width: auto; margin: 0; accent-color: var(--accent); }
+
+  .q-card {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .q-card p { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
+  .q-answer {
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+  }
+
+  .profile-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 0.9rem; }
+  .profile-grid dt { font-weight: 600; color: var(--text-dim); }
+  .token-box {
+    word-break: break-all;
+    background: var(--bg);
+    padding: 10px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.72rem;
+    margin-top: 12px;
+    color: var(--text-dim);
+  }
+
+  .pages { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+
+  [hidden] { display: none !important; }
+
+  .sub-note { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; }
+</style>
+
+<div class="app">
+  <div class="logo">
+    <h1>Webtech MCQ</h1>
+    <p>Client pour l'API de Paul Farault</p>
+  </div>
+
+  <!-- AUTH -->
+  <div id="auth">
+    <div class="card" id="step-email">
+      <h2>Connexion</h2>
+      <div id="auth-msg" class="msg"></div>
+      <label for="email">Email ECE</label>
+      <input type="email" id="email" placeholder="prenom.nom@edu.ece.fr">
+      <button class="btn btn-accent" style="width:100%" onclick="requestCode()">Envoyer le code</button>
+    </div>
+    <div class="card" id="step-code" hidden>
+      <h2>Code de vérification</h2>
+      <div id="code-msg" class="msg"></div>
+      <p class="sub-note">Vérifie ta boîte mail, le code expire dans 5 minutes.</p>
+      <label for="code">Code à 6 chiffres</label>
+      <input type="text" id="code" placeholder="000000" maxlength="6">
+      <button class="btn btn-accent" style="width:100%" onclick="requestToken()">Valider</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" hidden>
+    <div class="tabs">
+      <button class="btn btn-ghost active" data-tab="assignments" onclick="showTab('assignments')">Devoirs</button>
+      <button class="btn btn-ghost" data-tab="submit" onclick="showTab('submit')">Soumettre</button>
+      <button class="btn btn-ghost" data-tab="practice" onclick="showTab('practice')">S'entraîner</button>
+      <button class="btn btn-ghost" data-tab="profile" onclick="showTab('profile')">Profil</button>
+      <button class="btn btn-danger" style="flex:0;padding:8px 12px" onclick="logout()">✕</button>
+    </div>
+
+    <!-- DEVOIRS -->
+    <div class="card" id="tab-assignments">
+      <h2>Mes devoirs</h2>
+      <div id="a-msg" class="msg"></div>
+      <div id="a-list"></div>
+    </div>
+
+    <!-- SOUMETTRE -->
+    <div class="card" id="tab-submit" hidden>
+      <h2>Soumettre une question</h2>
+      <div id="s-msg" class="msg"></div>
+      <label for="unit-sel">Chapitre</label>
+      <select id="unit-sel"></select>
+      <label for="q-text">Question</label>
+      <textarea id="q-text" placeholder="Écris ta question ici (Markdown accepté)"></textarea>
+      <label>Réponses (sélectionne la bonne)</label>
+      <div class="answer-row"><input type="radio" name="correct" value="0" checked><input type="text" id="a0" placeholder="Réponse A"></div>
+      <div class="answer-row"><input type="radio" name="correct" value="1"><input type="text" id="a1" placeholder="Réponse B"></div>
+      <div class="answer-row"><input type="radio" name="correct" value="2"><input type="text" id="a2" placeholder="Réponse C"></div>
+      <div class="answer-row"><input type="radio" name="correct" value="3"><input type="text" id="a3" placeholder="Réponse D"></div>
+      <div style="margin-top:12px"><button class="btn btn-accent" style="width:100%" onclick="submitQ()">Envoyer</button></div>
+    </div>
+
+    <!-- MODIFIER -->
+    <div class="card" id="tab-edit" hidden>
+      <h2>Modifier la soumission</h2>
+      <div id="e-msg" class="msg"></div>
+      <input type="hidden" id="edit-id">
+      <label>Question</label>
+      <textarea id="eq-text"></textarea>
+      <label>Réponses (sélectionne la bonne)</label>
+      <div class="answer-row"><input type="radio" name="ecorrect" value="0"><input type="text" id="ea0"></div>
+      <div class="answer-row"><input type="radio" name="ecorrect" value="1"><input type="text" id="ea1"></div>
+      <div class="answer-row"><input type="radio" name="ecorrect" value="2"><input type="text" id="ea2"></div>
+      <div class="answer-row"><input type="radio" name="ecorrect" value="3"><input type="text" id="ea3"></div>
+      <div id="e-warn" class="msg err" style="display:block;margin-top:10px">L'API ne révèle pas la bonne réponse. Re sélectionne la correcte avant de sauvegarder.</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-accent" style="flex:1" onclick="updateSub()">Sauvegarder</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="showTab('assignments')">Annuler</button>
+      </div>
+    </div>
+
+    <!-- S'ENTRAÎNER -->
+    <div class="card" id="tab-practice" hidden>
+      <h2>Questions approuvées</h2>
+      <div id="p-msg" class="msg"></div>
+      <div id="p-list"></div>
+      <div class="pages" id="p-pages"></div>
+    </div>
+
+    <!-- PROFIL -->
+    <div class="card" id="tab-profile" hidden>
+      <h2>Mon profil</h2>
+      <div id="pr-msg" class="msg"></div>
+      <dl class="profile-grid" id="pr-info"></dl>
+      <div class="token-box" id="pr-token"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://mcq-api.paul-farault.workers.dev';
+let token, email;
+
+try { token = localStorage.getItem('mcq_token') || ''; } catch { token = ''; }
+try { email = localStorage.getItem('mcq_email') || ''; } catch { email = ''; }
+
+if (email) document.getElementById('email').value = email;
+if (token) showApp();
+
+function msg(id, txt, ok) {
+  const el = document.getElementById(id);
+  el.textContent = txt;
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+}
+
+function clr(id) {
+  const el = document.getElementById(id);
+  el.className = 'msg';
+  el.textContent = '';
+}
+
+async function api(path, opts = {}) {
+  const h = { 'Content-Type': 'application/json' };
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  if (opts.headers) Object.assign(h, opts.headers);
+  opts.headers = h;
+  let res;
+  try { res = await fetch(API + path, opts); }
+  catch { throw new Error('Impossible de contacter le serveur. Vérifie ta connexion.'); }
+  const txt = await res.text();
+  let data;
+  try { data = JSON.parse(txt); } catch { data = txt; }
+  if (!res.ok) throw new Error(data?.error?.message || data?.error?.code || 'Erreur ' + res.status);
+  return data;
+}
+
+async function requestCode() {
+  clr('auth-msg');
+  email = document.getElementById('email').value.trim();
+  if (!email) { msg('auth-msg', 'Entre ton email.', false); return; }
+  try {
+    await api('/auth/code', { method: 'POST', body: JSON.stringify({ email }) });
+    try { localStorage.setItem('mcq_email', email); } catch {}
+    document.getElementById('step-code').hidden = false;
+    msg('auth-msg', 'Code envoyé ! Vérifie ta boîte mail.', true);
+  } catch (e) { msg('auth-msg', e.message, false); }
+}
+
+async function requestToken() {
+  clr('code-msg');
+  const code = document.getElementById('code').value.trim();
+  if (!code) { msg('code-msg', 'Entre le code.', false); return; }
+  try {
+    const d = await api('/auth/token', { method: 'POST', body: JSON.stringify({ email, code }) });
+    token = d.accessToken;
+    try { localStorage.setItem('mcq_token', token); } catch {}
+    showApp();
+  } catch (e) { msg('code-msg', e.message, false); }
+}
+
+function showApp() {
+  document.getElementById('auth').hidden = true;
+  document.getElementById('app').hidden = false;
+  loadAssignments();
+}
+
+function logout() {
+  token = '';
+  try { localStorage.removeItem('mcq_token'); } catch {}
+  document.getElementById('auth').hidden = false;
+  document.getElementById('app').hidden = true;
+  document.getElementById('step-code').hidden = true;
+}
+
+function showTab(name) {
+  ['assignments','submit','practice','profile','edit'].forEach(t => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.hidden = true;
+  });
+  document.getElementById('tab-' + name).hidden = false;
+  document.querySelectorAll('.tabs .btn-ghost').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  if (name === 'assignments') loadAssignments();
+  if (name === 'practice') loadQuestions(1);
+  if (name === 'profile') loadProfile();
+}
+
+const STATUS = { none: 'Non soumis', submitted: 'Soumis', approved: 'Approuvé', excused: 'Dispensé' };
+
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+async function loadAssignments() {
+  clr('a-msg');
+  const list = document.getElementById('a-list');
+  list.innerHTML = '<p style="color:var(--text-dim)">Chargement...</p>';
+  try {
+    const d = await api('/submissions');
+    const items = d.items;
+    const sel = document.getElementById('unit-sel');
+    sel.innerHTML = '';
+    items.forEach(a => {
+      const o = document.createElement('option');
+      o.value = a.unitOrder;
+      o.textContent = a.unitOrder + '. ' + a.unit;
+      sel.appendChild(o);
+    });
+    if (!items.length) { list.innerHTML = '<p style="color:var(--text-dim)">Aucun devoir.</p>'; return; }
+    list.innerHTML = '';
+    items.forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      let actions = '';
+      if (a.submission && a.status === 'submitted') {
+        actions = `<div class="item-actions">
+          <button class="btn btn-ghost" style="flex:1;font-size:0.78rem" onclick="editSub(${a.submission.id})">Modifier</button>
+          <button class="btn btn-danger" style="flex:1;font-size:0.78rem" onclick="delSub(${a.submission.id})">Supprimer</button>
+        </div>`;
+      }
+      div.innerHTML = `<div class="item-title">${a.unitOrder}. ${a.unit}</div>
+        <div class="item-meta">Ouvert le ${fmtDate(a.opensAt)} · Limite ${fmtDate(a.dueAt)}</div>
+        <span class="badge badge-${a.status}">${STATUS[a.status]}</span>${actions}`;
+      list.appendChild(div);
+    });
+  } catch (e) {
+    if (e.message.includes('authentication') || e.message.includes('401')) {
+      logout();
+      msg('auth-msg', 'Session expirée, reconnecte toi.', false);
+    } else { msg('a-msg', e.message, false); list.innerHTML = ''; }
+  }
+}
+
+async function submitQ() {
+  clr('s-msg');
+  const unitOrder = parseInt(document.getElementById('unit-sel').value);
+  const question = document.getElementById('q-text').value.trim();
+  const ci = parseInt(document.querySelector('input[name="correct"]:checked').value);
+  const answers = [];
+  for (let i = 0; i < 4; i++) {
+    const t = document.getElementById('a' + i).value.trim();
+    if (!t) { msg('s-msg', 'Remplis les 4 réponses.', false); return; }
+    answers.push({ text: t, isCorrect: i === ci });
+  }
+  if (!question) { msg('s-msg', 'Écris une question.', false); return; }
+  try {
+    await api('/submissions', { method: 'POST', body: JSON.stringify({ unitOrder, question, answers }) });
+    msg('s-msg', 'Question soumise !', true);
+    document.getElementById('q-text').value = '';
+    for (let i = 0; i < 4; i++) document.getElementById('a' + i).value = '';
+  } catch (e) { msg('s-msg', e.message, false); }
+}
+
+async function editSub(id) {
+  clr('e-msg');
+  try {
+    const s = await api('/submissions/' + id);
+    document.getElementById('edit-id').value = id;
+    document.getElementById('eq-text').value = s.question;
+    s.answers.forEach((a, i) => { if (i < 4) document.getElementById('ea' + i).value = a.text; });
+    document.querySelectorAll('input[name="ecorrect"]')[0].checked = true;
+    showTab('edit');
+  } catch (e) { msg('a-msg', e.message, false); }
+}
+
+async function updateSub() {
+  clr('e-msg');
+  const id = document.getElementById('edit-id').value;
+  const question = document.getElementById('eq-text').value.trim();
+  const ci = parseInt(document.querySelector('input[name="ecorrect"]:checked').value);
+  const answers = [];
+  for (let i = 0; i < 4; i++) {
+    const t = document.getElementById('ea' + i).value.trim();
+    if (!t) { msg('e-msg', 'Remplis les 4 réponses.', false); return; }
+    answers.push({ text: t, isCorrect: i === ci });
+  }
+  if (!question) { msg('e-msg', 'Écris une question.', false); return; }
+  try {
+    await api('/submissions/' + id, { method: 'PUT', body: JSON.stringify({ question, answers }) });
+    msg('e-msg', 'Modifié !', true);
+    setTimeout(() => showTab('assignments'), 800);
+  } catch (e) { msg('e-msg', e.message, false); }
+}
+
+async function delSub(id) {
+  if (!confirm('Supprimer cette soumission ?')) return;
+  try {
+    await fetch(API + '/submissions/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    loadAssignments();
+  } catch (e) { msg('a-msg', e.message, false); }
+}
+
+async function loadQuestions(page) {
+  clr('p-msg');
+  const list = document.getElementById('p-list');
+  list.innerHTML = '<p style="color:var(--text-dim)">Chargement...</p>';
+  try {
+    const d = await api('/questions?page=' + page + '&limit=10', { headers: {} });
+    if (!d.items.length) {
+      list.innerHTML = '<p style="color:var(--text-dim)">Aucune question approuvée pour le moment.</p>';
+      document.getElementById('p-pages').innerHTML = '';
+      return;
+    }
+    list.innerHTML = '';
+    d.items.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = 'q-card';
+      div.innerHTML = `<p>${(page - 1) * 10 + i + 1}. ${q.question}</p>`;
+      q.answers.forEach(a => {
+        const ans = document.createElement('div');
+        ans.className = 'q-answer';
+        ans.textContent = a.text;
+        div.appendChild(ans);
+      });
+      list.appendChild(div);
+    });
+    const total = Math.ceil(d.total / d.limit);
+    const pg = document.getElementById('p-pages');
+    pg.innerHTML = '';
+    for (let p = 1; p <= total; p++) {
+      const b = document.createElement('button');
+      b.className = 'btn ' + (p === page ? 'btn-accent' : 'btn-ghost');
+      b.style.cssText = 'padding:6px 12px;font-size:0.78rem';
+      b.textContent = p;
+      b.onclick = () => loadQuestions(p);
+      pg.appendChild(b);
+    }
+  } catch (e) { msg('p-msg', e.message, false); list.innerHTML = ''; }
+}
+
+async function loadProfile() {
+  clr('pr-msg');
+  const info = document.getElementById('pr-info');
+  info.innerHTML = '';
+  try {
+    const d = await api('/me');
+    info.innerHTML = `<dt>ID</dt><dd>${d.id}</dd>
+      <dt>Email</dt><dd>${d.email}</dd>
+      <dt>Prénom</dt><dd>${d.firstName || '—'}</dd>
+      <dt>Nom</dt><dd>${d.lastName || '—'}</dd>
+      <dt>Classe</dt><dd>${d.class.code}</dd>`;
+    document.getElementById('pr-token').textContent = token;
+  } catch (e) { msg('pr-msg', e.message, false); }
+}
+</script>
