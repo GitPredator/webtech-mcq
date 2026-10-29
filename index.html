@@ -313,9 +313,8 @@
 </div>
 
 <script>
-const API_DIRECT = 'https://mcq-api.paul-farault.workers.dev';
-const CORS_PROXY = 'https://corsproxy.io/?url=';
-function apiUrl(path) { return CORS_PROXY + encodeURIComponent(API_DIRECT + path); }
+const API = 'https://mcq-proxy.ppredator367.workers.dev';
+function apiUrl(path) { return API + path; }
 let token, email;
 
 try { token = localStorage.getItem('mcq_token') || ''; } catch { token = ''; }
