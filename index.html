@@ -2,7 +2,6 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-  /* Layout: single-column centered app, card-based sections */
   :root {
     --bg: #f8f9fb;
     --surface: #ffffff;
@@ -314,7 +313,9 @@
 </div>
 
 <script>
-const API = 'https://mcq-api.paul-farault.workers.dev';
+const API_DIRECT = 'https://mcq-api.paul-farault.workers.dev';
+const CORS_PROXY = 'https://corsproxy.io/?url=';
+function apiUrl(path) { return CORS_PROXY + encodeURIComponent(API_DIRECT + path); }
 let token, email;
 
 try { token = localStorage.getItem('mcq_token') || ''; } catch { token = ''; }
@@ -341,7 +342,7 @@ async function api(path, opts = {}) {
   if (opts.headers) Object.assign(h, opts.headers);
   opts.headers = h;
   let res;
-  try { res = await fetch(API + path, opts); }
+  try { res = await fetch(apiUrl(path), opts); }
   catch { throw new Error('Impossible de contacter le serveur. Vérifie ta connexion.'); }
   const txt = await res.text();
   let data;
@@ -502,7 +503,7 @@ async function updateSub() {
 async function delSub(id) {
   if (!confirm('Supprimer cette soumission ?')) return;
   try {
-    await fetch(API + '/submissions/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    await fetch(apiUrl('/submissions/' + id), { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
     loadAssignments();
   } catch (e) { msg('a-msg', e.message, false); }
 }
