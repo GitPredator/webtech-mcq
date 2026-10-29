@@ -448,6 +448,15 @@
       </div>
     </div>
 
+    <!-- DÉTAIL (lecture seule) -->
+    <div class="card" id="tab-view" hidden>
+      <h2>Détail de la soumission</h2>
+      <div id="v-content"></div>
+      <div style="margin-top:14px">
+        <button class="btn btn-ghost" style="width:100%" onclick="showTab('assignments')">Retour aux devoirs</button>
+      </div>
+    </div>
+
     <!-- S'ENTRAÎNER -->
     <div class="card" id="tab-practice" hidden>
       <h2>S'entraîner</h2>
@@ -579,7 +588,7 @@ function logout() {
 /* ── TABS ── */
 
 function showTab(name) {
-  ['assignments','submit','practice','profile','edit'].forEach(t => {
+  ['assignments','submit','practice','profile','edit','view'].forEach(t => {
     const el = document.getElementById('tab-' + t);
     if (el) el.hidden = true;
   });
@@ -658,7 +667,6 @@ async function loadAssignments() {
     await Promise.all(fetches);
 
     items.forEach(a => {
-      console.log('Assignment:', a.unit, 'status:', a.status, 'submission:', a.submission);
       const div = document.createElement('div');
       div.className = 'item';
 
@@ -708,8 +716,11 @@ async function loadAssignments() {
         </div>
         <div class="sub-note" style="margin-top:6px;font-size:0.75rem">Tu peux modifier ta question tant qu'elle n'a pas été acceptée.</div>`;
       } else if (a.submission && (a.status === 'locked' || a.status === 'approved')) {
-        // Accepted: cannot modify
-        actions = `<div class="sub-note" style="margin-top:8px;font-size:0.75rem;color:var(--locked)">Question acceptée, modification impossible.</div>`;
+        // Accepted: show read-only view button
+        actions = `<div class="item-actions">
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="viewSub(${a.submission.id})">Voir le détail</button>
+        </div>
+        <div class="sub-note" style="margin-top:6px;font-size:0.75rem;color:var(--locked)">Question acceptée, modification impossible.</div>`;
       }
 
       div.innerHTML = titleHtml + metaHtml +
@@ -821,6 +832,28 @@ async function delSub(id) {
     await fetch(apiUrl('/submissions/' + id), { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
     loadAssignments();
   } catch (e) { msg('a-msg', e.message, false); }
+}
+
+/* ── VIEW (read-only detail) ── */
+
+async function viewSub(id) {
+  const el = document.getElementById('v-content');
+  loading(el);
+  showTab('view');
+  try {
+    const s = await api('/submissions/' + id);
+    let html = `<div class="q-card">`;
+    html += `<div class="q-text">${esc(s.question)}</div>`;
+    s.answers.forEach((a, i) => {
+      html += `<div class="q-option locked" style="cursor:default">
+        <span class="q-letter">${LETTERS[i]}</span>
+        <span>${esc(a.text)}</span>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<div class="sub-note" style="margin-top:10px">Cette question a été acceptée. Elle ne peut plus être modifiée via l'API.</div>`;
+    el.innerHTML = html;
+  } catch (e) { el.innerHTML = '<div class="msg err" style="display:block">' + esc(e.message) + '</div>'; }
 }
 
 /* ── PRACTICE ── */
